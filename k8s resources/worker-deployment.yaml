@@ -21,7 +21,7 @@ spec:
         io.kompose.service: worker
     spec:
       containers:
-      - image: worker
+      - image: lpiot/dockercoins_worker:1.0
         name: worker
         resources: {}
       restartPolicy: Always

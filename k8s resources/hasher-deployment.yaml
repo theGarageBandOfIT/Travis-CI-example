@@ -21,7 +21,7 @@ spec:
         io.kompose.service: hasher
     spec:
       containers:
-      - image: hasher
+      - image: lpiot/dockercoins_hasher:1.0
         name: hasher
         ports:
         - containerPort: 80

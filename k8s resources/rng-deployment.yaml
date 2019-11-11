@@ -21,7 +21,7 @@ spec:
         io.kompose.service: rng
     spec:
       containers:
-      - image: rng
+      - image: lpiot/dockercoins_rng:1.0
         name: rng
         ports:
         - containerPort: 80

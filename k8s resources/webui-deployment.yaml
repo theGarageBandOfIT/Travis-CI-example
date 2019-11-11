@@ -22,17 +22,10 @@ spec:
         io.kompose.service: webui
     spec:
       containers:
-      - image: webui
+      - image: lpiot/dockercoins_webui:1.0
         name: webui
         ports:
         - containerPort: 80
         resources: {}
-        volumeMounts:
-        - mountPath: /files/
-          name: webui-claim0
       restartPolicy: Always
-      volumes:
-      - name: webui-claim0
-        persistentVolumeClaim:
-          claimName: webui-claim0
 status: {}
