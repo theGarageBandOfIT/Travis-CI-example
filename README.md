@@ -1,5 +1,7 @@
 # Travis-CI-example
 
+![Travis-CI build status](https://travis-ci.com/theGarageBandOfIT/Travis-CI-example.svg?branch=master)
+
 A small example about how to use Travis-CI
 
 - [Travis-CI-example](#travis-ci-example)
