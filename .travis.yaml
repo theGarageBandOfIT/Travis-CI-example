@@ -11,7 +11,7 @@ notifications:
 jobs:
   include:
   - stage: deploy
-    if: branch = master
+    if: branch = travis-implem
     script:
     - docker pull thegaragebandofit/infra-as-code-tools:gcl270-ter0.12.13-pac1.4.5
 stages:
