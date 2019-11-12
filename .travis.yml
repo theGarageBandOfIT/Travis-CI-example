@@ -1,0 +1,18 @@
+dist: bionic
+sudo: false
+language: generic
+git:
+  depth: 5
+notifications:
+  email:
+  - ludovic.piot@thegaragebandofit.com
+  on_success: always
+  on_failure: always
+jobs:
+  include:
+  - stage: deploy
+    if: branch = travis-implem
+    script:
+    - docker pull thegaragebandofit/infra-as-code-tools:gcl270-ter0.12.13-pac1.4.5
+stages:
+- deploy

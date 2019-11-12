@@ -2,6 +2,11 @@
 
 A small example about how to use Travis-CI
 
+- [Travis-CI-example](#travis-ci-example)
+  - [the Application](#the-application)
+  - [Integration to Travis-CI](#integration-to-travis-ci)
+    - [Using a runner with a docker container including all the tools](#using-a-runner-with-a-docker-container-including-all-the-tools)
+
 ## the Application
 
 Demo application is **DockerCoins** forked from <https://github.com/jpetazzo/dockercoins/> (see: [this folder](https://github.com/theGarageBandOfIT/Travis-CI-example/tree/master/docker-compose-original-resources)).
@@ -57,3 +62,25 @@ Generate and save its Key as a `JSON` file. It will look like this…
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/travisci%40travis-ci-example-258722.iam.gserviceaccount.com"
 }
 ```
+
+## Integration to Travis-CI
+
+We build a `.travis.yml` file that will automate our _CI/CD pipeline_.  
+
+What we have to do:
+
+1. connect to the `GCP` platform, thanks to `gcloud` _CLI_ tool
+2. authenticate with the right `JSON` key file (in the folder named `secret`)
+3. retrieve the right `Kubernetes` credentials so that the `kubectl` _CLI_ tool is able to manipulate the `Kubernetes` _cluster_.
+
+### Using a runner with a docker container including all the tools
+
+To do so, we will use:
+
+* a generic _Linux_ _runner_ on `Travis-CI` platform
+* and a `Docker` _container_ that already has the right tools (`gcloud` and `kubectl`)
+    * this `Docker` container is built from this source: <https://github.com/theGarageBandOfIT/infra-as-code-tools>
+    * … and published in the `Docker Hub`: <https://hub.docker.com/r/thegaragebandofit/infra-as-code-tools/tags>
+    * … by the way, the `Docker Hub` offers its own _CI/CD pipeline_ that integrates to `Github`.
+
+> :bulb: Using a `Docker` container makes it easy to debug your `Travis-CI` _pipeline_ since you can run the same container on your laptop.
