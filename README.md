@@ -4,8 +4,10 @@ A small example about how to use Travis-CI
 
 - [Travis-CI-example](#travis-ci-example)
   - [the Application](#the-application)
+  - [the Google Compute Kubernetes Cluster](#the-google-compute-kubernetes-cluster)
   - [Integration to Travis-CI](#integration-to-travis-ci)
     - [Using a runner with a docker container including all the tools](#using-a-runner-with-a-docker-container-including-all-the-tools)
+    - [Managing secrets](#managing-secrets)
 
 ## the Application
 
@@ -84,3 +86,68 @@ To do so, we will use:
     * … by the way, the `Docker Hub` offers its own _CI/CD pipeline_ that integrates to `Github`.
 
 > :bulb: Using a `Docker` container makes it easy to debug your `Travis-CI` _pipeline_ since you can run the same container on your laptop.
+
+### Managing secrets
+
+To manage secrets in `Travis-CI` the solution is to store secrets directly into your `Github` _repository_ in an **encrypted** version.  
+The `Travis-CI` platform will keep the **encryption private key** into the platform.  
+_Runners_ have the ability to get the matching **encryption public key** to **decrypt** secrets in order to use them.
+
+We will then **encrypt** our `JSON` key file (used by `gcloud` _CLI_) and store the **encrypted** version into our `Github` _repository_.
+
+```sh
+$ travis login --com
+We need your GitHub login to identify you.
+This information will not be sent to Travis CI, only to api.github.com.
+The password will not be displayed.
+
+Try running with --github-token or --auto if you dont want to enter your password anyway.
+
+Username: lpiot
+Password for lpiot: *******
+Two-factor authentication code for lpiot: 787939
+
+$ travis encrypt-file ./secrets/gcp-keyfile.json --com
+encrypting ./secrets/gcp-keyfile.json for theGarageBandOfIT/Travis-CI-example
+storing result as gcp-keyfile.json.enc
+storing secure env variables for decryption
+
+Please add the following to your build script (before_install stage in your .travis.yml, for instance):
+
+    openssl aes-256-cbc -K $encrypted_f735c1e13263_key -iv $encrypted_f735c1e13263_iv -in gcp-keyfile.json.enc -out ./secrets/gcp-keyfile.json -d
+
+Pro Tip: You can add it automatically by running with --add.
+
+Make sure to add gcp-keyfile.json.enc to the git repository.
+Make sure not to add ./secrets/gcp-keyfile.json to the git repository.
+Commit all changes to your .travis.yml.
+```
+
+Now we can use this **encrypted** file into our _CI/CD pipeline_…
+
+
+First, the **encrypted** file is **decrypted** in the `travis.yml` file…
+
+```YAML
+before_install:
+- openssl aes-256-cbc -K $encrypted_f735c1e13263_key -iv $encrypted_f735c1e13263_iv -in ./secrets/gcp-keyfile.json.enc -out ./secrets/gcp-keyfile.json -d
+```
+
+Then, the **decrypted** file is made available into the docker container in the `travis.yml` file…
+
+```YAML
+docker run
+      --volume "$(pwd)/secrets":/secrets
+```
+
+At last, the **decrypted** file is used by the `deploy.sh` script…
+
+```sh
+echo "Retrieve credentials so that Gcloud is able to request the right GCP project…"
+gcloud auth activate-service-account --key-file=/secrets/gcp-keyfile.json --project=travis-ci-example-258722
+```
+
+:tada: You have got a fully functionnal _CI/CD pipeline_ that is able to interacts with both:
+
+* the `GCP` platform
+* **and** the `Kubernetes` _cluster_.
