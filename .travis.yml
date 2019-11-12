@@ -14,5 +14,20 @@ jobs:
     if: branch = travis-implem
     script:
     - docker pull thegaragebandofit/infra-as-code-tools:gcl270-ter0.12.13-pac1.4.5
+    - bash -c 'docker run
+      --volume "$(pwd)/secrets":/secrets
+      --volume "$(pwd)/scripts":/scripts
+      --volume "$(pwd)/k8s-resources":/k8s-resources
+      --env GOOGLE_PROJECT=travis-ci-example-258722
+      --env GOOGLE_APPLICATION_CREDENTIALS="/secrets/gcp-keyfile.json"
+      --workdir /k8s-resources
+      thegaragebandofit/infra-as-code-tools:gcl270-ter0.12.13-pac1.4.5
+      /scripts/deploy.sh'
+
+
+
 stages:
 - deploy
+
+before_install:
+- openssl aes-256-cbc -K $encrypted_f735c1e13263_key -iv $encrypted_f735c1e13263_iv -in ./secrets/gcp-keyfile.json.enc -out ./secrets/gcp-keyfile.json -d
