@@ -24,8 +24,6 @@ jobs:
       thegaragebandofit/infra-as-code-tools:gcl270-ter0.12.13-pac1.4.5
       /scripts/deploy.sh'
 
-
-
 stages:
 - deploy
 

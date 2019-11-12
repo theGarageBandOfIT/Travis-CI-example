@@ -125,6 +125,29 @@ Commit all changes to your .travis.yml.
 
 Now we can use this **encrypted** file into our _CI/CD pipeline_…
 
-```YAML
 
+First, the **encrypted** file is **decrypted** in the `travis.yml` file…
+
+```YAML
+before_install:
+- openssl aes-256-cbc -K $encrypted_f735c1e13263_key -iv $encrypted_f735c1e13263_iv -in ./secrets/gcp-keyfile.json.enc -out ./secrets/gcp-keyfile.json -d
 ```
+
+Then, the **decrypted** file is made available into the docker container in the `travis.yml` file…
+
+```YAML
+docker run
+      --volume "$(pwd)/secrets":/secrets
+```
+
+At last, the **decrypted** file is used by the `deploy.sh` script…
+
+```sh
+echo "Retrieve credentials so that Gcloud is able to request the right GCP project…"
+gcloud auth activate-service-account --key-file=/secrets/gcp-keyfile.json --project=travis-ci-example-258722
+```
+
+:tada: You have got a fully functionnal _CI/CD pipeline_ that is able to interacts with both:
+
+* the `GCP` platform
+* **and** the `Kubernetes` _cluster_.
