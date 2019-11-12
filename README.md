@@ -8,6 +8,8 @@ A small example about how to use Travis-CI
   - [Integration to Travis-CI](#integration-to-travis-ci)
     - [Using a runner with a docker container including all the tools](#using-a-runner-with-a-docker-container-including-all-the-tools)
     - [Managing secrets](#managing-secrets)
+- [Demo time](#demo-time)
+- [Cleanup](#cleanup)
 
 ## the Application
 
@@ -151,3 +153,26 @@ gcloud auth activate-service-account --key-file=/secrets/gcp-keyfile.json --proj
 
 * the `GCP` platform
 * **and** the `Kubernetes` _cluster_.
+
+# Demo time
+
+```sh
+# to get the external IP of the node
+$ gcloud compute instances list
+NAME                                        ZONE           MACHINE_TYPE  PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP    STATUS
+gke-travis-ci-cluster-pool-1-b75ec2b2-29r9  us-central1-a  g1-small                   10.128.0.3   34.68.171.171  RUNNING
+
+# to get the port of the WebUI service
+$ kubectl get svc webui
+NAME    TYPE       CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
+webui   NodePort   10.0.15.244   <none>        80:32621/TCP   9s
+```
+
+* WebUI: <http://34.68.171.171:32621/index.html>
+* Travis-CI: <https://travis-ci.com/theGarageBandOfIT/Travis-CI-example>
+
+# Cleanup
+
+```sh
+kubectl delete --recursive -f ./k8s-resources/
+```
